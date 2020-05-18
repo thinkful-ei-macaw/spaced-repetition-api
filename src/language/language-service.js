@@ -1,3 +1,6 @@
+/* eslint-disable strict */
+const LinkList = require('./LinkList');
+
 const LanguageService = {
   getUsersLanguage(db, user_id) {
     return db
@@ -7,10 +10,10 @@ const LanguageService = {
         'language.name',
         'language.user_id',
         'language.head',
-        'language.total_score',
+        'language.total_score'
       )
       .where('language.user_id', user_id)
-      .first()
+      .first();
   },
 
   getLanguageWords(db, language_id) {
@@ -24,13 +27,13 @@ const LanguageService = {
         'next',
         'memory_value',
         'correct_count',
-        'incorrect_count',
+        'incorrect_count'
       )
-      .where({ language_id })
+      .where({ language_id });
   },
 
   getNextWord(db, user_id) {
-    return db 
+    return db
       .from('language')
       .select(
         'language.head',
@@ -41,16 +44,21 @@ const LanguageService = {
       )
       .where('language.user_id', user_id)
       .first()
-      .leftJoin(
-        'word',
-        'language.head',
-        'word.id'
-      )
-  }
-}
+      .leftJoin('word', 'language.head', 'word.id');
+  },
+  getLangLinkList(words, headId) {
+    const langLinkList = new LinkList();
+    let nextId = headId;
+    while (nextId !== null) {
+      for (let i = 0; i < words.length; i++) {
+        if (words[i].id === nextId) {
+          nextId = words[i].next;
+          langLinkList.insertFirst(words[i]);
+        }
+      }
+    }
+    return langLinkList;
+  },
+};
 
-
-module.exports = LanguageService
-
-
-  
+module.exports = LanguageService;
