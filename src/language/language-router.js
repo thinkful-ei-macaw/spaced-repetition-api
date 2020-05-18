@@ -51,7 +51,8 @@ languageRouter
         req.user.id)
         console.log({data})
       res.json({
-        nextWord: data.head,
+        language: data.name,
+        nextWord: data.original,
         wordCorrectCount: data.correct_count,
         wordIncorrectCount: data.incorrect_count,
         totalScore: data.total_score

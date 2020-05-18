@@ -37,6 +37,8 @@ const LanguageService = {
         'word.correct_count',
         'word.incorrect_count',
         'language.total_score',
+        'word.original',
+        'language.name'
       )
       .where('language.user_id', user_id)
       .first()
