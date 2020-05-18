@@ -2,18 +2,18 @@
 
 ## Local dev setup
 
-If using user `dunder-mifflin`:
+If using user `dunder_mifflin`:
 
 ```bash
 mv example.env .env
-createdb -U dunder-mifflin spaced-repetition
-createdb -U dunder-mifflin spaced-repetition-test
+createdb -U dunder_mifflin spaced-repetition
+createdb -U dunder_mifflin spaced-repetition-test
 ```
 
 to seed tables:
 psql -U dunder_mifflin -d spaced-repetition -f ./seeds/seed.tables.sql
 
-If your `dunder-mifflin` user has a password be sure to set it in `.env` for all appropriate fields. Or if using a different user, update appropriately.
+If your `dunder_mifflin` user has a password be sure to set it in `.env` for all appropriate fields. Or if using a different user, update appropriately.
 
 ```bash
 npm install
