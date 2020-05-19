@@ -76,6 +76,7 @@ languageRouter.post('/guess', jsonBodyParser, async (req, res, next) => {
       req.app.get('db'),
       req.language.id
     );
+    console.log('step1', {words})
 
     if (!words) {
       res.status(400).json({
@@ -90,7 +91,7 @@ languageRouter.post('/guess', jsonBodyParser, async (req, res, next) => {
 
     let { translation, memory_value, id } = wordsLinkList.head.value;
     const userAnswer = guess.toLowerCase();
-
+      console.log('step2', {translation, memory_value, id})
     if (userAnswer === translation.toLowerCase()) {
       try {
         let correctWord = await LanguageService.correctWord(
@@ -98,14 +99,17 @@ languageRouter.post('/guess', jsonBodyParser, async (req, res, next) => {
           memory_value,
           id
         );
+        console.log('step3', {correctWord})
         let nextWord = await LanguageService.getNextWord(
           req.app.get('db'),
           wordsLinkList.head.value.next
         );
+        console.log('step4', {nextWord})
         let total = await LanguageService.updateTotalScore(
           req.app.get('db'),
           req.language.id
         );
+        console.log('step5', {total})
         await LanguageService.shiftWords(
           req.app.get('db'),
           req.language.id,
@@ -122,6 +126,7 @@ languageRouter.post('/guess', jsonBodyParser, async (req, res, next) => {
           answer: correctWord.translation,
           isCorrect: true,
         };
+        console.log('step6', {correctResponse})
 
         res.send(correctResponse);
         next();
@@ -134,11 +139,12 @@ languageRouter.post('/guess', jsonBodyParser, async (req, res, next) => {
           req.app.get('db'),
           id
         );
+        console.log('step7', {incorrectWord})
         let nextWord = await LanguageService.getNextWord(
           req.app.get('db'),
           wordsLinkList.head.value.next
         );
-
+        console.log('step8', {nextWord})
         await LanguageService.shiftWords(
           req.app.get('db'),
           req.language.id,
@@ -151,7 +157,7 @@ languageRouter.post('/guess', jsonBodyParser, async (req, res, next) => {
           req.app.get('db'),
           req.language.id
         );
-
+          console.log('step9', {total})
         let incorrectResponse = {
           nextWord: wordsLinkList.head.next.value.original,
           wordCorrectCount: nextWord.correct_count,
@@ -159,14 +165,14 @@ languageRouter.post('/guess', jsonBodyParser, async (req, res, next) => {
           totalScore: total,
           isCorrect: false,
         };
-
+        console.log('step10', {incorrectResponse})
         res.send(incorrectResponse);
-      } finally {
+      } catch(error) {
         next();
       } 
     } 
   }
-  finally {
+  catch(error) {
     next();
   } 
 })
