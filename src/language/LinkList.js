@@ -77,7 +77,11 @@ class LinkedList {
   _findNthElement(pos) {
     let node = this.head;
     for (let i = 0; i < pos; i++) {
-      node = node.next;
+      if (!node.next) {
+        return node;
+      } else {
+        node = node.next;
+      }
     }
     return node;
   }
@@ -104,13 +108,14 @@ class LinkedList {
     }
     prevNode.next = currNode.next;
   }
+
   find(item) {
-    // start at head
-    let currNode = this.head;
-    // if list is empty
+    // check first if list is empty
     if (!this.head) {
       return null;
     }
+    // start at head
+    let currNode = this.head;
     while (currNode.value !== item) {
       // return null at end of the list and item not on the list
       if (currNode.next === null) {
