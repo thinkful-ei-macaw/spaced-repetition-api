@@ -47,7 +47,6 @@ languageRouter
       const data = await LanguageService.getNextWord(
         req.app.get('db'),
         req.user.id)
-        console.log({data})
       res.json({
         language: data.name,
         nextWord: data.original,
@@ -64,7 +63,7 @@ languageRouter
 
 languageRouter.post('/guess', jsonBodyParser, async (req, res, next) => {
   const { guess } = req.body;
-console.log({guess})
+  console.log('BODY', req.body)
   if (!guess) {
     return res.status(400).json({
       error: `No 'Guess' value in req body! Please enter a guess and try again...`,
