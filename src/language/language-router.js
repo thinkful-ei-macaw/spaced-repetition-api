@@ -43,16 +43,16 @@ languageRouter.get('/', async (req, res, next) => {
 
 languageRouter.get('/head', async (req, res, next) => {
   try {
-    const data = await LanguageService.getNextWord(
+    const { head } = await LanguageService.getLanguageHeadWord(
       req.app.get('db'),
-      req.user.id
+      req.language.id
     );
-    console.log({ data });
+    console.log({ head });
     res.json({
-      nextWord: data.original,
-      wordCorrectCount: data.correct_count,
-      wordIncorrectCount: data.incorrect_count,
-      totalScore: data.total_score,
+      nextWord: head.original,
+      wordCorrectCount: head.correct_count,
+      wordIncorrectCount: head.incorrect_count,
+      totalScore: head.total_score,
     });
     next();
   } catch (error) {
@@ -65,7 +65,7 @@ languageRouter.post('/guess', jsonBodyParser, async (req, res, next) => {
 
   if (!guess) {
     return res.status(400).json({
-      error: `Guess value not found in body; try again!`,
+      error: `No 'Guess' value in req body! Please enter a guess and try again...`,
     });
   }
 
@@ -82,66 +82,88 @@ languageRouter.post('/guess', jsonBodyParser, async (req, res, next) => {
     }
 
     const wordsLinkList = await LanguageService.createWordsLinkList(
-      req.language,
+      req.app.get('db'),
       words
     );
 
-    let currentWord = wordsLinkList.find(wordsLinkList.head.value);
-    let nextWord = wordsLinkList.head.next;
-
-    const response = {
-      word: wordsLinkList.word.original,
-      correct: wordsLinkList.word.correct_count,
-      incorrect: req.word.incorrect_count,
-      total: wordsLinkList.language.total_score,
-      memoryBonus: wordsLinkList.head.value.memory_value,
-      solution: wordsLinkList.head.value.translation.toLowerCase(),
-      setResult: null,
-    };
-
-    // toLowerCase() - users submission can be compared to the translated solution accurately
+    let { translation, memory_value, id } = wordsLinkList.head.value;
     const userAnswer = guess.toLowerCase();
 
-    if (userAnswer === response.solution) {
-      response.setResult = true;
-      response.correct++;
-      response.total++;
-      response.memoryBonus *= 2;
-      res.status();
-    } else if (userAnswer !== solution) {
-      response.setResult = false;
-      response.incorrect++;
-      total--;
-      response.memoryBonus = 1;
+    if (userAnswer === translation.toLowerCase()) {
+      try {
+        let correctWord = await LanguageService.correctWord(
+          req.app.get('db'),
+          memory_value,
+          id
+        );
+        let nextWord = await LanguageService.getNextWord(
+          req.app.get('db'),
+          wordsLinkList.head.value.next
+        );
+        let total = await LanguageService.updateTotalScore(
+          req.app.get('db'),
+          req.language.id
+        );
+        await LanguageService.shiftWords(
+          req.app.get('db'),
+          req.language.id,
+          memory_value,
+          wordsLinkList,
+          id
+        );
+
+        let correctResponse = {
+          nextWord: wordsLinkList.head.next.value.original,
+          wordCorrectCount: nextWord.correct_count,
+          wordIncorrectCount: nextWord.incorrect_count,
+          totalScore: total,
+          answer: correctWord.translation,
+          isCorrect: true,
+        };
+
+        res.send(correctResponse);
+        next();
+      } catch (error) {
+        next(error);
+      }
     } else {
-      throw new Error('Solution word not found! Unable to proceed.');
+      try {
+        let incorrectWord = await LanguageService.incorrectWord(
+          req.app.get('db'),
+          id
+        );
+        let nextWord = await LanguageService.getNextWord(
+          req.app.get('db'),
+          wordsLinkList.head.value.next
+        );
+
+        await LanguageService.shiftWords(
+          req.app.get('db'),
+          req.language.id,
+          wordsLinkList,
+          id,
+          0
+        );
+
+        let total = await LanguageService.getTotalScore(
+          req.app.get('db'),
+          req.language.id
+        );
+
+        let incorrectResponse = {
+          nextWord: wordsLinkList.head.next.value.original,
+          wordCorrectCount: nextWord.correct_count,
+          wordIncorrectCount: wordsLinkList.head.next.value.incorrect_count,
+          totalScore: total,
+          isCorrect: false,
+        };
+
+        res.send(incorrectResponse);
+      } finally {
+        next();
+      }
     }
-
-    const arrangeWords = await wordsLinkList.insertAt(
-      wordsLinkList.head.value.memory_value
-    );
-
-    await LanguageService.updateWordsLinkList(req.app.get('db'), arrangeWords);
-    await LanguageService.updateListScore(req.app.get('db'));
-    await LanguageService.updateListHead(
-      req.app.get('db'),
-      req.language.id,
-      wordsLinkList.head.id
-    );
-
-    return res.status(200).json({
-      nextWord: wordsLinkList.head.value.original,
-      wordsCorrect: wordsLinkList.head.value.correct_count,
-      wordsIncorrect: wordsLinkList.head.value.incorrect_count,
-      totalScore: wordsLinkList.total_score,
-      usersAnswer,
-      actualAnswer,
-    });
-  } catch (error) {
-    next(error);
-  } finally {
-    res.send(reqBody);
-  }
-});
+  })
+)}
 
 module.exports = languageRouter;
