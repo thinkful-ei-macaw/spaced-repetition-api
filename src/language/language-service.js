@@ -62,8 +62,8 @@ const LanguageService = {
         'language.total_score',
         'word.next'
       )
-      .join('word', 'word.id', '=', 'language.head')
-      .where('language.id', language_id);
+      .join('word', 'word.id', 'language.head')
+      .where({ language_id });
   },
 
   createWordsLinkList: async (db, head) => {

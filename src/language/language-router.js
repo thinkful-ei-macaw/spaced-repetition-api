@@ -41,7 +41,7 @@ languageRouter.get('/', async (req, res, next) => {
   }
 });
 
-languageRouter
+languageRouter 
   .get('/head', async (req, res, next) => {
     try {
       const data = await LanguageService.getNextWord(
@@ -60,6 +60,7 @@ languageRouter
       next(error)
     }
   })
+
 
 languageRouter.post('/guess', jsonBodyParser, async (req, res, next) => {
   const { guess } = req.body;
