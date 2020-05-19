@@ -88,7 +88,7 @@ languageRouter.post('/guess', jsonBodyParser, async (req, res, next) => {
       req.app.get('db'),
       words
     );
-
+      console.log({wordsLinkList})
     let { translation, memory_value, id } = wordsLinkList.head.value;
     const userAnswer = guess.toLowerCase();
       console.log('step2', {translation, memory_value, id})
