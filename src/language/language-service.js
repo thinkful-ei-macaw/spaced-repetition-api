@@ -1,5 +1,5 @@
 /* eslint-disable strict */
-const LinkList = require('./LinkList');
+const LinkedList = require('./LinkedList');
 
 const LanguageService = {
   getUsersLanguage(db, user_id) {
@@ -66,20 +66,20 @@ const LanguageService = {
       .where('language.id', language_id);
   },
 
-  createWordsLinkList: async (db, head) => {
-    const wordsLinkList = new LinkList();
+  createWordsLinkedList: async (db, head) => {
+    const wordsLinkedList = new LinkedList();
     const firstWord = await LanguageService.getWord(db, head);
 
-    wordsLinkList.insertFirst(firstWord);
+    wordsLinkedList.insertFirst(firstWord);
 
     let nextWord = await LanguageService.getWord(db, firstWord.next);
 
     while (nextWord) {
-      wordsLinkList.insertLast(nextWord);
+      wordsLinkedList.insertLast(nextWord);
       nextWord = await LanguageService.getNextWord(db, user_id);
     }
 
-    return wordsLinkList;
+    return wordsLinkedList;
   },
 
   correctWord(db, memory_value, id) {

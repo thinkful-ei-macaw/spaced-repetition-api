@@ -84,12 +84,12 @@ languageRouter.post('/guess', jsonBodyParser, async (req, res, next) => {
       });
     }
 
-    const wordsLinkList = await LanguageService.createWordsLinkList(
+    const wordsLinkedList = await LanguageService.createWordsLinkedList(
       req.app.get('db'),
       words
     );
-      console.log({wordsLinkList})
-    let { translation, memory_value, id } = wordsLinkList.head.value;
+      console.log({wordsLinkedList})
+    let { translation, memory_value, id } = wordsLinkedList.head.value;
     const userAnswer = guess.toLowerCase();
       console.log('step2', {translation, memory_value, id})
     if (userAnswer === translation.toLowerCase()) {
@@ -102,7 +102,7 @@ languageRouter.post('/guess', jsonBodyParser, async (req, res, next) => {
         console.log('step3', {correctWord})
         let nextWord = await LanguageService.getNextWord(
           req.app.get('db'),
-          wordsLinkList.head.value.next
+          wordsLinkedList.head.value.next
         );
         console.log('step4', {nextWord})
         let total = await LanguageService.updateTotalScore(
@@ -114,12 +114,12 @@ languageRouter.post('/guess', jsonBodyParser, async (req, res, next) => {
           req.app.get('db'),
           req.language.id,
           memory_value,
-          wordsLinkList,
+          wordsLinkedList,
           id
         );
 
         let correctResponse = {
-          nextWord: wordsLinkList.head.next.value.original,
+          nextWord: wordsLinkedList.head.next.value.original,
           wordCorrectCount: nextWord.correct_count,
           wordIncorrectCount: nextWord.incorrect_count,
           totalScore: total,
@@ -142,13 +142,13 @@ languageRouter.post('/guess', jsonBodyParser, async (req, res, next) => {
         console.log('step7', {incorrectWord})
         let nextWord = await LanguageService.getNextWord(
           req.app.get('db'),
-          wordsLinkList.head.value.next
+          wordsLinkedList.head.value.next
         );
         console.log('step8', {nextWord})
         await LanguageService.shiftWords(
           req.app.get('db'),
           req.language.id,
-          wordsLinkList,
+          wordsLinkedList,
           id,
           0
         );
@@ -159,9 +159,9 @@ languageRouter.post('/guess', jsonBodyParser, async (req, res, next) => {
         );
           console.log('step9', {total})
         let incorrectResponse = {
-          nextWord: wordsLinkList.head.next.value.original,
+          nextWord: wordsLinkedList.head.next.value.original,
           wordCorrectCount: nextWord.correct_count,
-          wordIncorrectCount: wordsLinkList.head.next.value.incorrect_count,
+          wordIncorrectCount: wordsLinkedList.head.next.value.incorrect_count,
           totalScore: total,
           isCorrect: false,
         };
