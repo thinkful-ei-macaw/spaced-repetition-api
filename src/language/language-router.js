@@ -64,7 +64,7 @@ languageRouter
 
 languageRouter.post('/guess', jsonBodyParser, async (req, res, next) => {
   const { guess } = req.body;
-
+console.log({guess})
   if (!guess) {
     return res.status(400).json({
       error: `No 'Guess' value in req body! Please enter a guess and try again...`,
