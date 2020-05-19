@@ -68,36 +68,6 @@ const LanguageService = {
     return wordsLinkList;
   },
 
-  findWordsInList(language, words) {
-    // const wordsLinkList = new LinkList(language.user_id, language.id);
-    // let currWord = wordsLinkList.head.value;
-    // let nextWord = wordsLinkList.head.next;
-    // while (nextWord !== null) {
-    //   for (let i = 0; i < words.length; i++) {
-    //     if (words[i].id === nextId) {
-    //       nextId = words[i].next;
-    //       wordsLinkList.insertFirst(words[i]);
-    //     }
-    //   }
-    // }
-    // return wordsLinkList;
-    const wordsLinkList = this.createWordsLinkList();
-
-    do {
-      let currNode = wordsLinkList.head.value;
-      let nextNode = wordsLinkList.head.next;
-      if (words === currNode) {
-        currNode = nextNode;
-        if (words !== nextNode) {
-          throw new Error('linked list is empty!');
-        } else {
-          return wordsLinkList.find(words);
-        }
-      }
-    } while (words !== wordsLinkList.head.value);
-    return null;
-  },
-
   updateWordsLinkList(db, nodes) {
     return db.transaction((trx) => {
       let listQueries = [];

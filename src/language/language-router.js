@@ -65,7 +65,7 @@ languageRouter.post('/guess', jsonBodyParser, async (req, res, next) => {
 
   if (!guess) {
     return res.status(400).json({
-      error: `Guess value not found in body; try again!`,
+      error: `No 'Guess' value in req body! Please enter a guess and try again...`,
     });
   }
 
@@ -107,7 +107,7 @@ languageRouter.post('/guess', jsonBodyParser, async (req, res, next) => {
       response.correct++;
       response.total++;
       response.memoryBonus *= 2;
-      res.status();
+      res.status(201);
     } else if (userAnswer !== solution) {
       response.setResult = false;
       response.incorrect++;

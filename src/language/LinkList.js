@@ -7,8 +7,11 @@ class _Node {
 }
 
 class LinkedList {
-  construtor() {
+  construtor(user_id, id, total_score = 0) {
     this.head = null;
+    this.user_id = user_id;
+    this.total_score = total_score;
+    this.id = id;
   }
 
   insertFirst(item) {
