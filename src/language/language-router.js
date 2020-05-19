@@ -87,6 +87,7 @@ languageRouter.post('/guess', jsonBodyParser, async (req, res, next) => {
     const wordsLinkedList = await LanguageService.createWordsLinkedList(
       req.app.get('db'),
       words
+      //this is an array of objects, not a "head"
     );
       console.log({wordsLinkedList})
     let { translation, memory_value, id } = wordsLinkedList.head.value;

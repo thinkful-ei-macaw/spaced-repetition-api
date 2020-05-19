@@ -66,18 +66,22 @@ const LanguageService = {
       .where('language.id', language_id);
   },
 
-  createWordsLinkedList: async (db, head) => {
+  createWordsLinkedList: async (db, words) => {
     const wordsLinkedList = new LinkedList();
-    const firstWord = await LanguageService.getWord(db, head);
 
-    wordsLinkedList.insertFirst(firstWord);
+    words.forEach(word => {
+      wordsLinkedList.insertLast(word)
+    });
+    // const firstWord = await LanguageService.getWord(db, head);
 
-    let nextWord = await LanguageService.getWord(db, firstWord.next);
+    // wordsLinkedList.insertFirst(firstWord);
 
-    while (nextWord) {
-      wordsLinkedList.insertLast(nextWord);
-      nextWord = await LanguageService.getNextWord(db, user_id);
-    }
+    // let nextWord = await LanguageService.getWord(db, firstWord.next);
+
+    // while (nextWord) {
+    //   wordsLinkedList.insertLast(nextWord);
+    //   nextWord = await LanguageService.getNextWord(db, user_id);
+    // }
 
     return wordsLinkedList;
   },
