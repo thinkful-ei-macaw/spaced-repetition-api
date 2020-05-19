@@ -150,7 +150,7 @@ languageRouter.post('/guess', jsonBodyParser, async (req, res, next) => {
           req.language.id
         );
 
-        let incorrectResponse = {
+        const incorrectResponse = {
           nextWord: wordsLinkList.head.next.value.original,
           wordCorrectCount: nextWord.correct_count,
           wordIncorrectCount: wordsLinkList.head.next.value.incorrect_count,
@@ -163,7 +163,9 @@ languageRouter.post('/guess', jsonBodyParser, async (req, res, next) => {
         next();
       }
     }
-  })
-)}
+  } finally {
+    next();
+  }
+});
 
 module.exports = languageRouter;
