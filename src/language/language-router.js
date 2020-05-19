@@ -161,9 +161,12 @@ languageRouter.post('/guess', jsonBodyParser, async (req, res, next) => {
         res.send(incorrectResponse);
       } finally {
         next();
-      }
-    }
-  })
-)}
+      } 
+    } 
+  }
+  finally {
+    next();
+  } 
+})
 
 module.exports = languageRouter;
