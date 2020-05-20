@@ -34,14 +34,14 @@ const LanguageService = {
 
   getWord(db, id) {
     if (!id) {
-      return;
+      return null;
     }
-    return db.from('word').select('*').where({ id }).first();
+    return db.from('word').select('id').where(id).first();
   },
 
   getNextWord(db, id) {
     if (!id) {
-      return;
+      return null;
     }
     return db
       .from('word')
@@ -60,12 +60,11 @@ const LanguageService = {
     }
     const wordsLinkList = new LinkList();
     let wordId = currWord.id;
-    while (id) {
-      wordId = word.next;
+    while (wordId) {
+      wordId = currWord.next;
       wordsLinkList.insertAfter(currWord);
-      let nextWord;
       try {
-        currWord = await this.getNextWord(db, id);
+        currWord = await this.getNextWord(db, wordId);
       } catch (error) {
         throw new Error('could not find the next word');
       }
@@ -73,25 +72,32 @@ const LanguageService = {
     }
   },
 
+  updateWord(db, id, values) {
+    if (!id) {
+      return null;
+    }
+    return db.from('word').where({ id }).update({ values });
+  },
+
   updateWordsList(db, wordsLinkList, user_id) {
     return db.transaction(async (trx) => {
       let currWord = wordsLinkList.head;
       await trx
-      .into('language')
-      .where({ user_id })
-      .update({ head: currWord.value.id });
+        .into('language')
+        .where({ user_id })
+        .update({ head: currWord.value.id });
 
-      while(currWord !== null) {
+      while (currWord !== null) {
         await trx
-        .into('word')
-        .where({ id: currWord.value.id })
-        .update({
-          next: currWord.next !== null ? currWord.next.value.id : null,
-        });
+          .into('word')
+          .where({ id: currWord.value.id })
+          .update({
+            next: currWord.next !== null ? currWord.next.value.id : null,
+          });
         currWord = currWord.next;
       }
-    })
-  }
+    });
+  },
 
   correctWord(db, memory_value, id) {
     return db
