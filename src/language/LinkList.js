@@ -1,31 +1,37 @@
 /* eslint-disable strict */
 
 class _Node {
-  constructor(value, next) {
-    (this.value = value), (this.next = next);
+  constructor(value, next = null) {
+      this.value = value,
+      this.next = next;
   }
 }
 
 class LinkedList {
-  construtor() {
-    this.head = null;
+  construtor(head) {
+    this.head = head;
   }
 
   insertFirst(item) {
-    this.head = new _Node(item, this.head);
+    this.head = new _Node(item);
   }
 
-  insertLast(item) {
-    if (this.head === null) {
-      this.insertFirst(item);
-    } else {
-      let tempNode = this.head;
-      while (tempNode.next !== null) {
-        tempNode = tempNode.next;
-      }
-      tempNode.next = new _Node(item, null);
+  insertLast(item){
+    if(this.head === null){
+        this.insertFirst(item);
+    }
+    else{
+        let tempNode = this.head;
+
+        while(tempNode.next !== null){
+            tempNode = tempNode.next;
+        }
+        tempNode.next = new _Node(item, null);
     }
   }
+
+
+
 
   // insert new node after a node containing the key
   insertAfter(key, itemToInsert) {
@@ -130,4 +136,4 @@ class LinkedList {
   }
 }
 
-module.exports = LinkedList;
+module.exports = {LinkedList, _Node}
