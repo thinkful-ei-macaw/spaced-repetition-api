@@ -33,22 +33,21 @@ const LanguageService = {
   },
 
   getWord(db, id) {
-    return db.from('word').select('*').where('id', id);
+    if (!id) {
+      return;
+    }
+    return db.from('word').select('*').where({ id }).first();
   },
 
-  getNextWord(db, user_id) {
+  getNextWord(db, id) {
+    if (!id) {
+      return;
+    }
     return db
-      .from('language')
-      .select(
-        'language.head',
-        'word.correct_count',
-        'word.incorrect_count',
-        'language.total_score',
-        'word.original'
-      )
-      .where('language.user_id', user_id)
-      .first()
-      .leftJoin('word', 'language.head', 'word.id');
+      .from('word')
+      .select('original', 'correct_count', 'incorrect_count')
+      .where({ id })
+      .first();
   },
 
   getLanguageHeadWord(db, language_id) {
@@ -106,15 +105,11 @@ const LanguageService = {
       .returning('next', 'translation', 'memory_value', 'incorrect_count');
   },
 
-  getTotalScore(db, language_id) {
-    return db.from('word').where('id', word_id).update('next', next_id);
-  },
-
-  updateTotalScore(db, language_id) {
+  updateTotalScore(db, user_id, total_score) {
     return db
       .from('language')
-      .where('id', language_id)
-      .increment('total_score', 1)
+      .increment({ total_score })
+      .where({ user_id })
       .returning('total_score');
   },
 
