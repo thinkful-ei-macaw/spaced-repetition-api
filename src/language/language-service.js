@@ -50,36 +50,48 @@ const LanguageService = {
       .first();
   },
 
-  getLanguageHeadWord(db, language_id) {
-    return db
-      .from('language')
-      .select(
-        'word.original',
-        'word.translation',
-        'word.correct_count',
-        'word.incorrect_count',
-        'language.total_score',
-        'word.next'
-      )
-      .join('word', 'word.id', '=', 'language.head')
-      .where('language.id', language_id);
-  },
-
-  createWordsLinkList: async (db, head) => {
-    const wordsLinkList = new LinkList();
-    const firstWord = await LanguageService.getWord(db, head);
-
-    wordsLinkList.insertFirst(firstWord);
-
-    let nextWord = await LanguageService.getWord(db, firstWord.next);
-
-    while (nextWord) {
-      wordsLinkList.insertLast(nextWord);
-      nextWord = await LanguageService.getNextWord(db, user_id);
+  async createWordsLinkList(db, head) {
+    let currWord;
+    try {
+      currWord = await this.getWord(db, head);
+      console.log(currWord);
+    } catch (error) {
+      throw new Error('could not find the first word');
     }
-
-    return wordsLinkList;
+    const wordsLinkList = new LinkList();
+    let wordId = currWord.id;
+    while (id) {
+      wordId = word.next;
+      wordsLinkList.insertAfter(currWord);
+      let nextWord;
+      try {
+        currWord = await this.getNextWord(db, id);
+      } catch (error) {
+        throw new Error('could not find the next word');
+      }
+      return wordsLinkList;
+    }
   },
+
+  updateWordsList(db, wordsLinkList, user_id) {
+    return db.transaction(async (trx) => {
+      let currWord = wordsLinkList.head;
+      await trx
+      .into('language')
+      .where({ user_id })
+      .update({ head: currWord.value.id });
+
+      while(currWord !== null) {
+        await trx
+        .into('word')
+        .where({ id: currWord.value.id })
+        .update({
+          next: currWord.next !== null ? currWord.next.value.id : null,
+        });
+        currWord = currWord.next;
+      }
+    })
+  }
 
   correctWord(db, memory_value, id) {
     return db
@@ -111,41 +123,6 @@ const LanguageService = {
       .increment({ total_score })
       .where({ user_id })
       .returning('total_score');
-  },
-
-  nextHead(db, language_id, next) {
-    return db.from('language').where('id', language_id).update('head', next);
-  },
-
-  switchNexts(db, word_id, next_id) {
-    return db.from('word').where('id', word_id).update('next', next_id);
-  },
-
-  shiftWords: async (db, language_id, memory_value, word_id, linkList) => {
-    let lastNode = linkList.head;
-
-    let words = await LanguageService.getLanguageWords(db, language_id);
-    let nextNode = await LanguageService.nextHead(
-      db,
-      language_id,
-      lastNode.value.next
-    );
-    if (memory_value > words.length - 1) {
-      while (lastNode.next) {
-        lastNode = lastNode.next;
-      }
-      await LanguageService.switchNexts(db, lastNode.value.id, word_id);
-      await LanguageService.switchNexts(db, word_id, null);
-      return;
-    }
-
-    for (let i = 0; i <= memory_value; i++) {
-      lastNode = lastNode.next;
-    }
-    let nextId = lastNode.next.value.id;
-    await LanguageService.switchNexts(db, lastNode.value.id, word_id);
-    await LanguageService.switchNexts(db, word_id, nextId);
-    return;
   },
 };
 

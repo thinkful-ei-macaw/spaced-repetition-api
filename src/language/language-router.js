@@ -96,15 +96,18 @@ languageRouter.post('/guess', jsonBodyParser, async (req, res, next) => {
           memory_value,
           id
         );
+
         let nextWord = await LanguageService.getNextWord(
           req.app.get('db'),
           wordsLinkList.head.value.next
         );
+
         let total = await LanguageService.updateTotalScore(
           req.app.get('db'),
           req.language.id
         );
-        await LanguageService.shiftWords(
+
+        await LanguageService.updateWordsList(
           req.app.get('db'),
           req.language.id,
           memory_value,
