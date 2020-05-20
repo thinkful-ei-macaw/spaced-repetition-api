@@ -33,16 +33,10 @@ const LanguageService = {
   },
 
   getWord(db, id) {
-    if (!id) {
-      return null;
-    }
-    return db.from('word').select('id').where(id).first();
+    return db.from('word').select('id').where({ id }).first();
   },
 
   getNextWord(db, id) {
-    if (!id) {
-      return null;
-    }
     return db
       .from('word')
       .select('original', 'correct_count', 'incorrect_count')
@@ -73,9 +67,6 @@ const LanguageService = {
   },
 
   updateWord(db, id, values) {
-    if (!id) {
-      return null;
-    }
     return db.from('word').where({ id }).update({ values });
   },
 
