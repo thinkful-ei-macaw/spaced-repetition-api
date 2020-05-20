@@ -30,41 +30,6 @@ class LinkedList {
     }
   }
 
-
-
-
-  // insert new node after a node containing the key
-  insertAfter(key, itemToInsert) {
-    let tempNode = this.head;
-    while (tempNode !== null && tempNode.value !== key) {
-      tempNode = tempNode.next;
-    }
-    if (tempNode !== null) {
-      tempNode.next = new _Node(itemToInsert, tempNode.next);
-    }
-  }
-
-  // inserts a new node before a node containing the ket
-  insertBefore(key, itemToInsert) {
-    if (this.head === null) {
-      return;
-    }
-    if (this.head.value === key) {
-      this.insertFirst(itemToInsert);
-      return;
-    }
-    let prevNode = null;
-    let currNode = this.head;
-    while (currNode !== null && currNode.value !== key) {
-      prevNode = currNode;
-      currNode = currNode.next;
-    }
-    if (currNode === null) {
-      throw Error('node not found to insert');
-    }
-    prevNode.next = new _Node(itemToInsert, currNode);
-  }
-
   insertAt(nthPos, itemToInsert) {
     if (nthPos < 0) {
       throw Error('position error');
@@ -136,4 +101,4 @@ class LinkedList {
   }
 }
 
-module.exports = {LinkedList, _Node}
+module.exports = LinkedList

@@ -41,84 +41,108 @@ languageRouter.get('/', async (req, res, next) => {
   }
 });
 
-languageRouter.get('/head', async (req, res, next) => {
-  try {
-    const head = await LanguageService.getLanguageWords(
-      req.app.get('db'),
-      req.language.id
-    );
-    console.log({ head });
-    res.json({
-      language: head.name,
-      nextWord: head.original,
-      wordCorrectCount: head.correct_count,
-      wordIncorrectCount: head.incorrect_count,
-      totalScore: head.total_score,
-    });
-    next();
-  } catch (error) {
-    next(error);
-  }
-});
+languageRouter
+  .get('/head', async (req, res, next) => {
+    try {
+      const data = await LanguageService.getNextWord(
+        req.app.get('db'),
+        req.user.id)
+
+        res.json({
+        language: data.name,
+        nextWord: data.original,
+        wordCorrectCount: data.correct_count,
+        wordIncorrectCount: data.incorrect_count,
+        totalScore: data.total_score
+      })
+    } 
+    catch(error) {
+      next(error)
+    }
+  })
 
 languageRouter.post('/guess', jsonBodyParser, async (req, res, next) => {
+  try{
   const { guess } = req.body;
+  let language = req.language
   if (!guess) {
     return res.status(400).json({
-      error: `No 'Guess' value in req body! Please enter a guess and try again...`,
+      error: `Missing 'guess' in request body`,
     });
   }
 
   const words = await LanguageService.getLanguageWords(
     req.app.get('db'),
-    req.language.id
+    language.id
   );
 
-  const headWord = await LanguageService.getHeadWord(
+  let headWord = await LanguageService.getHeadWord(
     req.app.get('db'),
-    req.language.head
+    language.head
   )
+  headWord = headWord[0]
 
   const list = LanguageService.createList(words, headWord)
 
-  let wasUserCorrect;
+  let isCorrect;
 
-  if (headWord[0].translation === guess) {
-    wasUserCorrect = true
+  if (headWord.translation === guess) {
+    isCorrect = true
+    language.total_score++
+
+    headWord.memory_value *= 2
   }
   else {
-    wasUserCorrect = false
+    isCorrect = false
+    headWord.incorrect_count++
+    headWord.memory_value = 1
   }
 
-  LanguageService.updateDBwithList(
+console.log({headWord})
+  list.remove(headWord)
+  list.insertAt(headWord.memory_value, headWord)
+  
+  language.head = list.head.value.id 
+  // LanguageService.displayList(list)
+// console.log({language})
+  await LanguageService.updateDb(
     req.app.get('db'),
-    req.language,
-    wasUserCorrect,
+    language,
     list
     )
 
+    let nextWord = await LanguageService.getNextWord(
+      req.app.get('db'),
+      req.user.id
+      )
 
+      // console.log({nextWord})
+    let rep = {
+    nextWord: nextWord.original,
+    totalScore: nextWord.total_score,
+    wordCorrectCount: headWord.correct_count,
+    wordIncorrectCount: headWord.incorrect_count,
+    answer: headWord.translation,
+    isCorrect
+    }
+  res.json(rep)
 
-  res.json(words)
-
+  }
+  catch(error) {
+    next(error)
+  }
 
 })
 
-
-
 /* 
 
-If the answer was correct:
-Double the value of M
-Else, if the answer was wrong:
-Reset M to 1
-Move the question back M places in the list
 
-
-Set the word's new memory value as appropriate according to the algorithm.
-Update the incorrect count or correct count for that word.
-Update the total score if appropriate.
-Shift the word along the linked list the appropriate amount of spaces.
-Persist the updated words and language in the database. */
+nextWord: testLanguagesWords[1].original,
+            totalScore: 0,
+            wordCorrectCount: 0,
+            wordIncorrectCount: 0,
+            answer: testLanguagesWords[0].translation,
+            isCorrect: false
+ */
 
 module.exports = languageRouter;
