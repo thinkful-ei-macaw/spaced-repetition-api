@@ -66,12 +66,15 @@ const LanguageService = {
       .where('language.id', language_id);
   },
 
-  createWordsLinkedList: async (db, words) => {
-    const wordsLinkedList = new LinkedList();
+  createWordsLinkedList(db, language, words) {
+    const wordsLinkedList = new LinkedList(language.id, language.user_id, language.total_score);
 
     words.forEach(word => {
-      wordsLinkedList.insertLast(word)
+      console.log(word)
     });
+
+  console.log({wordsLinkedList})
+
     // const firstWord = await LanguageService.getWord(db, head);
 
     // wordsLinkedList.insertFirst(firstWord);
@@ -82,7 +85,7 @@ const LanguageService = {
     //   wordsLinkedList.insertLast(nextWord);
     //   nextWord = await LanguageService.getNextWord(db, user_id);
     // }
-
+    console.log(wordsLinkedList)
     return wordsLinkedList;
   },
 

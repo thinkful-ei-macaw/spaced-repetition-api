@@ -76,7 +76,7 @@ languageRouter.post('/guess', jsonBodyParser, async (req, res, next) => {
       req.app.get('db'),
       req.language.id
     );
-    console.log('step1', {words})
+    // console.log('step1', {words})
 
     if (!words) {
       res.status(400).json({
@@ -86,6 +86,7 @@ languageRouter.post('/guess', jsonBodyParser, async (req, res, next) => {
 
     const wordsLinkedList = await LanguageService.createWordsLinkedList(
       req.app.get('db'),
+      req.language,
       words
       //this is an array of objects, not a "head"
     );
