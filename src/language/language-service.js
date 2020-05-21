@@ -1,96 +1,114 @@
-const LinkedList = require("./LinkList");
+const LinkedList = require('./LinkList');
 
 const LanguageService = {
   getUsersLanguage(db, user_id) {
     return db
-      .from("language")
+      .from('language')
       .select(
-        "language.id",
-        "language.name",
-        "language.user_id",
-        "language.head",
-        "language.total_score"
+        'language.id',
+        'language.name',
+        'language.user_id',
+        'language.head',
+        'language.total_score'
       )
-      .where("language.user_id", user_id)
+      .where('language.user_id', user_id)
       .first();
   },
 
   getLanguageWords(db, language_id) {
-    return db.from("word").select("*").where({ language_id });
+    return db
+      .from('word')
+      .select(
+        'word.id',
+        'language_id',
+        'original',
+        'translation',
+        'next',
+        'memory_value',
+        'correct_count',
+        'incorrect_count',
+        'language.head'
+      )
+      .join('language', 'language.id', '=', 'word.language_id')
+      .where({ language_id });
   },
 
   getNextWord(db, user_id) {
     return db
-      .from("language")
+      .from('language')
       .select(
-        "language.head",
-        "word.correct_count",
-        "word.incorrect_count",
-        "language.total_score",
-        "word.original",
-        "word.translation"
+        'language.head',
+        'word.correct_count',
+        'word.incorrect_count',
+        'language.total_score',
+        'word.original',
+        'word.translation'
       )
-      .where("language.user_id", user_id)
+      .where('language.user_id', user_id)
       .first()
-      .leftJoin("word", "language.head", "word.id");
+      .leftJoin('word', 'language.head', 'word.id');
   },
 
   getHeadWord(db, head_id) {
-    return db.from("word").select("*").where("id", head_id);
+    return db.from('word').select('*').where('id', head_id);
   },
 
-  createList(words, head) {
+  createList(words) {
     let list = new LinkedList();
-    list.insertFirst(head);
 
-    let current = head;
+    let current = words.find((word) => word.id === word.head)
+    list.insertFirst(current);
 
-    while (current.next) {
-      let nextWord = words.find((word) => {
-        return word.id == current.next;
-      });
-      // console.log({nextWord})
+    let nextWord = words.find((word) => {
+      return word.id === current.next;
+    });
+
+    while (nextWord) {
       list.insertLast(nextWord);
-
-      current = nextWord;
+        nextWord = words.find((word) => {
+        return word.id === nextWord.next;
+      });
+      
     }
-    return list;
+    return list
   },
 
-  updateDb(db, language, list) {
-    return db.transaction(async (trx) => {
-      try {
-        let currNode = list.head;
+  async updateDb(db, language, list, user_id) {
 
-        while (currNode) {
-          let val = currNode.value;
+    let trx = await db.transaction()
+    try {
+      let currNode = list.head;
 
-          await trx("word").where("id", val.id).update({
-            next: val.next,
-            correct_count: val.correct_count,
-            incorrect_count: val.incorrect_count,
-            memory_value: val.memory_value,
-          });
+      while (currNode) {
+        let val = currNode.value;
 
-          currNode = currNode.next;
-        }
+        await db('word')
+        .transacting(trx).where({id: val.id}).update({
+          next: currNode.next && currNode.next.value.id,
+          correct_count: val.correct_count,
+          incorrect_count: val.incorrect_count,
+          memory_value: val.memory_value,
+        });
+        currNode = currNode.next;
+      }
 
-        await trx("language").where("id", language.id).update({
+        await db('language').transacting(trx)
+        .where({user_id})
+        .update({
           head: language.head,
           total_score: language.total_score,
         });
 
-        await trx.commit();
-      } catch (e) {
-        await trx.rollback();
-      }
-    });
+      await trx.commit();
+    } catch (e) {
+      await trx.rollback();
+    }
   },
 
   displayList(list) {
     let currNode = list.head;
     while (currNode !== null) {
-      console.log(currNode.value);
+      console.log(currNode)
       currNode = currNode.next;
     }
   },
