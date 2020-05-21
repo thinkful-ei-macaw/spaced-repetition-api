@@ -2,8 +2,7 @@
 
 class _Node {
   constructor(value, next = null) {
-      this.value = value,
-      this.next = next;
+    (this.value = value), (this.next = next);
   }
 }
 
@@ -16,23 +15,22 @@ class LinkedList {
     this.head = new _Node(item);
   }
 
-  insertLast(item){
-    if(this.head === null){
-        this.insertFirst(item);
-    }
-    else{
-        let tempNode = this.head;
+  insertLast(item) {
+    if (this.head === null) {
+      this.insertFirst(item);
+    } else {
+      let tempNode = this.head;
 
-        while(tempNode.next !== null){
-            tempNode = tempNode.next;
-        }
-        tempNode.next = new _Node(item, null);
+      while (tempNode.next !== null) {
+        tempNode = tempNode.next;
+      }
+      tempNode.next = new _Node(item, null);
     }
   }
 
   insertAt(nthPos, itemToInsert) {
     if (nthPos < 0) {
-      throw Error('position error');
+      throw Error("position error");
     }
     if (nthPos === 0) {
       this.insertFirst(itemToInsert);
@@ -75,7 +73,7 @@ class LinkedList {
       currNode = currNode.next;
     }
     if (currNode === null) {
-      throw Error('item not found');
+      throw Error("item not found");
     }
     prevNode.next = currNode.next;
   }
@@ -101,4 +99,4 @@ class LinkedList {
   }
 }
 
-module.exports = LinkedList
+module.exports = LinkedList;
