@@ -1,4 +1,3 @@
-/* eslint-disable strict */
 
 class _Node {
   constructor(value, next = null) {
