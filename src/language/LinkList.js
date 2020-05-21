@@ -1,21 +1,18 @@
 /* eslint-disable strict */
 
 class _Node {
-  constructor(value, next) {
+  constructor(value, next = null) {
     (this.value = value), (this.next = next);
   }
 }
 
 class LinkedList {
-  construtor(user_id, id, total_score = 0) {
-    this.head = null;
-    this.user_id = user_id;
-    this.total_score = total_score;
-    this.id = id;
+  construtor(head) {
+    this.head = head;
   }
 
   insertFirst(item) {
-    this.head = new _Node(item, this.head);
+    this.head = new _Node(item);
   }
 
   insertLast(item) {
@@ -23,6 +20,7 @@ class LinkedList {
       this.insertFirst(item);
     } else {
       let tempNode = this.head;
+
       while (tempNode.next !== null) {
         tempNode = tempNode.next;
       }
@@ -30,41 +28,9 @@ class LinkedList {
     }
   }
 
-  // insert new node after a node containing the key
-  insertAfter(key, itemToInsert) {
-    let tempNode = this.head;
-    while (tempNode !== null && tempNode.value !== key) {
-      tempNode = tempNode.next;
-    }
-    if (tempNode !== null) {
-      tempNode.next = new _Node(itemToInsert, tempNode.next);
-    }
-  }
-
-  // inserts a new node before a node containing the ket
-  insertBefore(key, itemToInsert) {
-    if (this.head === null) {
-      return;
-    }
-    if (this.head.value === key) {
-      this.insertFirst(itemToInsert);
-      return;
-    }
-    let prevNode = null;
-    let currNode = this.head;
-    while (currNode !== null && currNode.value !== key) {
-      prevNode = currNode;
-      currNode = currNode.next;
-    }
-    if (currNode === null) {
-      throw Error('node not found to insert');
-    }
-    prevNode.next = new _Node(itemToInsert, currNode);
-  }
-
   insertAt(nthPos, itemToInsert) {
     if (nthPos < 0) {
-      throw Error('position error');
+      throw Error("position error");
     }
     if (nthPos === 0) {
       this.insertFirst(itemToInsert);
@@ -107,7 +73,7 @@ class LinkedList {
       currNode = currNode.next;
     }
     if (currNode === null) {
-      throw Error('item not found');
+      throw Error("item not found");
     }
     prevNode.next = currNode.next;
   }
