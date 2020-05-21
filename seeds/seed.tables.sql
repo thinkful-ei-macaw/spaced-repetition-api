@@ -9,8 +9,8 @@ INSERT INTO "user" ("id", "username", "name", "password")
 VALUES
   (
     1,
-    'admin',
-    'Dunder Mifflin Admin',
+    'test',
+    'test',
     -- password = "pass"
     '$2a$10$fCWkaGbt7ZErxaxclioLteLUgg4Q3Rp09WW0s/wSLxDKYsaGYUpjG'
   );
@@ -28,8 +28,8 @@ VALUES
   (5, 1, 'bucle de eventos', 'event loop', 6),
   (6, 1, 'vendedor', 'salesman', 7),
   (7, 1, 'calendario', 'calendar', 8),
-  (8, 1, 'servidor', 'server', 9);
-  (9, 1, 'pollo', 'chicken', 10);
+  (8, 1, 'servidor', 'server', 9),
+  (9, 1, 'pollo', 'chicken', 10),
   (10, 1, 'perro', 'dog', null);
 
 
