@@ -32,8 +32,23 @@ const LanguageService = {
       .where({ language_id });
   },
 
-  getWord(db, id) {
-    return db.from('word').select('id').where({ id }).first();
+  getListHead(db, language_id) {
+    return db
+      .from('word')
+      .select(
+        'word.id',
+        'word.language_id',
+        'word.original',
+        'word.translation',
+        'word.next',
+        'word.memory_value',
+        'word.correct_count',
+        'word.incorrect_count',
+        'language.total_score'
+      )
+      .leftJoin('language', 'language.head', 'word.id')
+      .where('language.id', language_id)
+      .first();
   },
 
   getNextWord(db, id) {
@@ -48,7 +63,6 @@ const LanguageService = {
     let currWord;
     try {
       currWord = await this.getWord(db, head);
-      console.log(currWord);
     } catch (error) {
       throw new Error('could not find the first word');
     }
