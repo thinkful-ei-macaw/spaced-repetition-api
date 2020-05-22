@@ -86,7 +86,10 @@ languageRouter.post("/guess", jsonBodyParser, async (req, res, next) => {
       isCorrect = true;
       language.total_score++;
       newNode.correct_count++;
-      newNode.memory_value *= 2;
+    //set memory value to double it's value or equal to length of list, whichever is smaller
+      let mem_val = newNode.memory_value * 2;
+      newNode.memory_value = Math.min(mem_val, words.length)
+
     } else {
       isCorrect = false;
       newNode.incorrect_count++;
