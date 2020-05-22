@@ -1,6 +1,64 @@
-# Spaced repetition API!
+# Spaced Repetition Capstone - Api
 
-## Local dev setup
+Written by Sara Mills and Brandon Leek
+
+## Link to heroku server
+
+https://intense-stream-48886.herokuapp.com/
+
+## Link to live app
+
+https://spaced-repetition-sb.now.sh/
+
+## Link to client repo
+
+https://github.com/thinkful-ei-macaw/spaced-repetition-client-Brandon-Sara
+
+## Link to server repo
+
+https://github.com/thinkful-ei-macaw/spaced-repetition-api-Brandon-Sara
+
+## Summary
+
+This is an app to start learning Spanish using the spaced repetition technique.
+
+## Endpoints
+
+POST
+/api/auth/token: login route, expects
+"username": string
+"password": string
+returns auth token
+
+POST
+/api/user register route, expects
+"name": string
+"username": string
+"password": string
+adds new user to database
+
+GET
+/api/language
+retrieves user name, language, and words to practice
+
+GET
+/api/language/head
+retrieves the first word to practice
+
+POST
+/api/language/guess expects
+"guess": string
+checks if word is correct and returns the result as well as the next word to be practiced
+
+### Tech used
+
+Languages/Frameworks: Javascript, Node, Express, PSQL, Knex
+
+Middleware: Cors, Helmet, Morgan, JWT
+
+Testing: Mocha, Chai, Supertest
+
+### Local dev setup
 
 If using user `dunder_mifflin`:
 
