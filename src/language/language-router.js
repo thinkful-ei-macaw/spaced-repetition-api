@@ -75,7 +75,6 @@ languageRouter.post("/guess", jsonBodyParser, async (req, res, next) => {
       req.app.get("db"),
       language.id
     );
-    // console.log('step1', {words})
 
     const list = await LanguageService.createList(words);
 
