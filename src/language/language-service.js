@@ -58,12 +58,12 @@ const LanguageService = {
 
     let current = words.find((word) => word.id === word.head);
     list.insertFirst(current);
-
     let nextWord = words.find((word) => {
       return word.id === current.next;
     });
 
     while (nextWord) {
+
       list.insertLast(nextWord);
       nextWord = words.find((word) => {
         return word.id === nextWord.next;
@@ -99,6 +99,7 @@ const LanguageService = {
 
       await trx.commit();
     } catch (e) {
+      console.log(e.stack())
       await trx.rollback();
     }
   },

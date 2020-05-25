@@ -10,21 +10,28 @@ class LinkedList {
   }
 
   insertFirst(item) {
+    if (!item) {
+      return 'No value to insert'
+    }
     let newNode = new _Node(item);
 
-    if (this.head === null) {
+    if (!this.head) {
       this.head = newNode;
     }
+    else {
     newNode.next = this.head;
-    this.head = newNode;  
+    this.head = newNode; 
+    }
   }
 
   insertLast(item) {
+    if (!item) {
+      return 'No value to insert'
+    }
     if (this.head === null) {
       this.insertFirst(item);
     } else {
       let tempNode = this.head;
-
       while (tempNode.next !== null) {
         tempNode = tempNode.next;
       }
@@ -33,10 +40,13 @@ class LinkedList {
   }
 
   insertAt(nthPos, itemToInsert) {
-    if (nthPos < 1) {
+    if (!itemToInsert) {
+      return 'No value to insert'
+    }
+    if (nthPos < 0) {
       throw Error("position error");
     }
-    if (nthPos === 1 || this.head === null) {
+    if (nthPos === 0 || !this.head) {
       this.insertFirst(itemToInsert);
     } 
     else {
