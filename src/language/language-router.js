@@ -93,7 +93,9 @@ languageRouter.post("/guess", jsonBodyParser, async (req, res, next) => {
       newNode.memory_value = 1;
     }
 
+    //remove node in list with this value
     list.remove(prevHead);
+    //insert the node with updated values into the list at the index of it's memory value
     list.insertAt(newNode.memory_value, newNode);
 
     language.head = list.head.value.id;

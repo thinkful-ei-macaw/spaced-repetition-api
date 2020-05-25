@@ -40,7 +40,7 @@ class LinkedList {
       this.insertFirst(itemToInsert);
     } 
     else {
-      // find the node we want to insert at
+      // Find the node which we want to insert after
       const node = this._findNthElement(nthPos-1);
       const newNode = new _Node(itemToInsert, null);
       newNode.next = node.next;
@@ -60,6 +60,7 @@ class LinkedList {
     return node;
   }
 
+  //remove node in list with given value
   remove(item) {
     if (!this.head) {
       return null;
