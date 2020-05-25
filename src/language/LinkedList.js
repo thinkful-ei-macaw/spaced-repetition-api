@@ -10,7 +10,13 @@ class LinkedList {
   }
 
   insertFirst(item) {
-    this.head = new _Node(item);
+    let newNode = new _Node(item);
+
+    if (this.head === null) {
+      this.head = newNode;
+    }
+    newNode.next = this.head;
+    this.head = newNode;  
   }
 
   insertLast(item) {
@@ -27,14 +33,15 @@ class LinkedList {
   }
 
   insertAt(nthPos, itemToInsert) {
-    if (nthPos < 0) {
+    if (nthPos < 1) {
       throw Error("position error");
     }
-    if (nthPos === 0) {
+    if (nthPos === 1 || this.head === null) {
       this.insertFirst(itemToInsert);
-    } else {
+    } 
+    else {
       // find the node we want to insert at
-      const node = this._findNthElement(nthPos - 1);
+      const node = this._findNthElement(nthPos-1);
       const newNode = new _Node(itemToInsert, null);
       newNode.next = node.next;
       node.next = newNode;

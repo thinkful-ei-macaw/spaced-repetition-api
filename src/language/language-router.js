@@ -11,12 +11,10 @@ languageRouter.use(requireAuth).use(async (req, res, next) => {
       req.app.get("db"),
       req.user.id
     );
-
     if (!language)
       return res.status(404).json({
         error: `You don't have any languages`,
       });
-
     req.language = language;
     next();
   } catch (error) {
@@ -30,7 +28,6 @@ languageRouter.get("/", async (req, res, next) => {
       req.app.get("db"),
       req.language.id
     );
-
     res.json({
       language: req.language,
       words,
@@ -86,7 +83,7 @@ languageRouter.post("/guess", jsonBodyParser, async (req, res, next) => {
       isCorrect = true;
       language.total_score++;
       newNode.correct_count++;
-    //set memory value to double it's value or equal to length of list, whichever is smaller
+    //set memory value to double its value or equal to length of list, whichever is smaller
       let mem_val = newNode.memory_value * 2;
       newNode.memory_value = Math.min(mem_val, words.length)
 
